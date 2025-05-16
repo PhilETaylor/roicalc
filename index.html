@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ROI Calculator Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    header {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    .description {
+      margin-bottom: 30px;
+      color: #666;
+    }
+  </style>
+  <!-- Import the component -->
+  <script type="module">
+    import './src/roi-calculator-form.js';
+  </script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>ROI Calculator Form Demo</h1>
+    </header>
+
+    <div class="description">
+      <p>This is a demonstration of the ROI Calculator Form component. Fill out the form below to see how it works.</p>
+    </div>
+
+    <!-- Use the custom element -->
+    <roi-calculator-form></roi-calculator-form>
+
+    <script>
+      // Example of how to listen for the form submission event
+      document.querySelector('roi-calculator-form').addEventListener('form-submitted', (e) => {
+        console.log('Form data received:', e.detail);
+        // In a real application, you might send this data to a server
+      });
+
+      // Listen for the meeting request event
+      document.querySelector('roi-calculator-form').addEventListener('meeting-requested', (e) => {
+        console.log('Meeting request received:', e.detail);
+        // In a real application, you might send this data to a scheduling system
+      });
+    </script>
+  </div>
+</body>
+</html>
