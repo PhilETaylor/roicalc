@@ -132,144 +132,246 @@ export class RoiCalculatorForm extends LitElement {
   static styles = css`
     :host {
       display: block;
-      font-family: Arial, sans-serif;
+      font-family: 'Montserrat', Arial, sans-serif;
       max-width: 600px;
       margin: 0 auto;
       padding: 20px;
       box-sizing: border-box;
+      color: #333;
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .form-title {
+      color: #333;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      margin-top: 0;
+    }
+
+    .form-subtitle {
+      color: #666;
+      font-size: 16px;
+      margin-top: 0;
+      margin-bottom: 0;
+      line-height: 1.5;
     }
 
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 25px;
     }
 
     label {
       display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
     }
 
     select, input[type="text"], input[type="email"] {
       width: 100%;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      padding: 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
       box-sizing: border-box;
       font-size: 16px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      background-color: #f9f9f9;
+    }
+
+    select:focus, input[type="text"]:focus, input[type="email"]:focus {
+      outline: none;
+      border-color: #e91e63;
+      box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.2);
     }
 
     .radio-group, .checkbox-group {
-      margin-top: 8px;
+      margin-top: 10px;
     }
 
     .radio-option, .checkbox-option {
-      display: block;
-      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .radio-option input[type="radio"], .checkbox-option input[type="checkbox"] {
+      margin-right: 10px;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid #e0e0e0;
+      border-radius: 50%;
+      outline: none;
+      transition: all 0.2s ease-in-out;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .checkbox-option input[type="checkbox"] {
+      border-radius: 4px;
+    }
+
+    .radio-option input[type="radio"]:checked, .checkbox-option input[type="checkbox"]:checked {
+      border-color: #e91e63;
+      background-color: #fff;
+    }
+
+    .radio-option input[type="radio"]:checked::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #e91e63;
+    }
+
+    .checkbox-option input[type="checkbox"]:checked::after {
+      content: '✓';
+      position: absolute;
+      top: -2px;
+      left: 3px;
+      font-size: 14px;
+      color: #e91e63;
     }
 
     .error-message {
-      color: red;
+      color: #e91e63;
       font-size: 14px;
       margin-top: 5px;
     }
 
     button {
-      background-color: #4CAF50;
+      background-color: #e91e63;
       color: white;
-      padding: 10px 15px;
+      padding: 14px 28px;
       border: none;
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
       font-size: 16px;
       margin-right: 10px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 8px rgba(233, 30, 99, 0.3);
     }
 
     button:hover {
-      background-color: #45a049;
+      background-color: #d81b60;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(233, 30, 99, 0.4);
     }
 
     .success-message {
-      color: green;
+      color: #e91e63;
       font-weight: bold;
       margin-top: 20px;
       margin-bottom: 20px;
     }
 
     .score-container {
-      background-color: #f8f9fa;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 20px;
-      margin-top: 20px;
-      margin-bottom: 20px;
+      background-color: #ffffff;
+      border: 1px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 30px;
+      margin-top: 40px;
+      margin-bottom: 40px;
       text-align: center;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
     }
 
     .score-title {
-      font-size: 18px;
-      margin-bottom: 10px;
+      font-size: 22px;
+      margin-bottom: 20px;
       color: #333;
+      font-weight: 700;
     }
 
     .score-value {
-      font-size: 36px;
-      font-weight: bold;
-      margin-bottom: 10px;
+      font-size: 48px;
+      font-weight: 800;
+      margin-bottom: 20px;
+      display: inline-block;
+      position: relative;
+    }
+
+    .score-value::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 3px;
+      background-color: #e91e63;
     }
 
     .score-value-red {
-      color: #FF0000;
+      color: #e53935;
     }
 
     .score-value-amber {
-      color: #FFA500;
+      color: #ff8f00;
     }
 
     .score-value-yellow {
-      color: #FFFF00;
+      color: #fdd835;
     }
 
     .score-value-green {
-      color: #4CAF50;
+      color: #43a047;
     }
 
     .score-description {
       font-size: 16px;
       color: #666;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
+      line-height: 1.6;
+      max-width: 80%;
+      margin-left: auto;
+      margin-right: auto;
     }
 
-    .request-meeting-button {
-      background-color: #2196F3;
-    }
-
-    .request-meeting-button:hover {
-      background-color: #0b7dda;
-    }
+    /* No additional styles needed for request-meeting-button as they're inherited from the base button styles */
 
     .meeting-requested-message {
-      color: #2196F3;
+      color: #e91e63;
       font-weight: bold;
-      margin-top: 10px;
+      margin-top: 15px;
+      font-size: 16px;
     }
 
     .score-slider-container {
       width: 100%;
-      height: 30px;
-      margin: 20px 0;
+      height: 12px;
+      margin: 40px 0 30px;
       position: relative;
-      background: linear-gradient(to right, #FF0000, #FFA500, #FFFF00, #4CAF50);
-      border-radius: 15px;
+      background: linear-gradient(to right, #e53935, #ff8f00, #fdd835, #43a047);
+      border-radius: 6px;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
     }
 
     .score-marker {
       position: absolute;
-      top: -10px;
-      width: 10px;
-      height: 50px;
+      top: -8px;
+      width: 8px;
+      height: 28px;
       background-color: #333;
-      border-radius: 5px;
+      border-radius: 4px;
       transform: translateX(-50%);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
 
   `;
@@ -277,7 +379,10 @@ export class RoiCalculatorForm extends LitElement {
   render() {
     return html`
       <div class="roi-calculator-form">
-        <h2>ROI Calculator Form</h2>
+        <div class="form-header">
+          <h2 class="form-title">ROI Calculator</h2>
+          <p class="form-subtitle">Evaluate your eCommerce platform's performance and potential</p>
+        </div>
 
         ${this.formSubmitted ? 
           html`
