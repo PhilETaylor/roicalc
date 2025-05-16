@@ -115,17 +115,17 @@ export class RoiCalculatorForm extends LitElement {
     const rawScore = operationalScore + backlogScore + challengesScore + roadmapScore;
 
     // Apply rounding rules
-    // 1. If score is between 0 and 1, round up to 1
-    if (rawScore > 0 && rawScore < 1) {
+    // 1. If score is 0, return 1
+    if (rawScore <= 0) {
       return 1;
     }
 
     // 2. For other scores, round up if decimal part > 0.8, otherwise round down
     const decimalPart = rawScore - Math.floor(rawScore);
     if (decimalPart > 0.8) {
-      return Math.ceil(rawScore);
+      return Math.min(10, Math.ceil(rawScore));
     } else {
-      return Math.floor(rawScore);
+      return Math.max(1, Math.min(10, Math.floor(rawScore)));
     }
   }
 
@@ -258,7 +258,7 @@ export class RoiCalculatorForm extends LitElement {
       height: 30px;
       margin: 20px 0;
       position: relative;
-      background: linear-gradient(to right, #4CAF50, #FFFF00, #FFA500, #FF0000);
+      background: linear-gradient(to right, #FF0000, #FFA500, #FFFF00, #4CAF50);
       border-radius: 15px;
     }
 
@@ -272,13 +272,6 @@ export class RoiCalculatorForm extends LitElement {
       transform: translateX(-50%);
     }
 
-    .score-marker-label {
-      position: absolute;
-      top: -30px;
-      transform: translateX(-50%);
-      font-weight: bold;
-      color: #333;
-    }
   `;
 
   render() {
@@ -288,12 +281,10 @@ export class RoiCalculatorForm extends LitElement {
 
         ${this.formSubmitted ? 
           html`
-            <div class="success-message">Thank you for submitting the form!</div>
-
             ${this.showScore ? 
               html`
                 <div class="score-container">
-                  <div class="score-title">Your ROI Opportunity Score</div>
+                  <div class="score-title">Your current health score</div>
                   <div class="score-value ${this._getScoreColorClass()}">${this.totalScore}/10</div>
                   <div class="score-description">
                     ${this.totalScore >= 7 ? 
@@ -305,7 +296,6 @@ export class RoiCalculatorForm extends LitElement {
 
                   <div class="score-slider-container">
                     <div class="score-marker" style="left: ${this._getScorePercentage()}%">
-                      <div class="score-marker-label">${this.totalScore}</div>
                     </div>
                   </div>
 
@@ -673,9 +663,9 @@ export class RoiCalculatorForm extends LitElement {
   // Calculate the percentage position for the score marker on the slider
   _getScorePercentage() {
     // Convert score to percentage (0-10 to 0-100)
-    // Reverse the percentage because the gradient goes from green (left) to red (right)
-    // but higher scores should be on the green side
-    return 100 - (this.totalScore * 10);
+    // Higher scores should be on the green side (right)
+    // Adjust the range to keep the marker away from the edges (5% to 95%)
+    return 5 + (this.totalScore / 10) * 90;
   }
 }
 
