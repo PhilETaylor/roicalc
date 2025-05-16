@@ -11,9 +11,11 @@
     "lit": "*"
   },
   "devDependencies": {
-    "@web/dev-server": "*",
     "@rollup/plugin-node-resolve": "*",
+    "@rollup/plugin-replace": "^6.0.2",
+    "@web/dev-server": "*",
     "rollup": "*",
+    "rollup-plugin-gzip": "^4.0.1",
     "rollup-plugin-terser": "*"
   }
 }
