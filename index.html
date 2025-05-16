@@ -37,7 +37,7 @@
   </style>
   <!-- Import the optimized component -->
   <script type="module">
-    import './dist/roi-calculator-form.js';
+    import './src/roi-calculator-form.js';
   </script>
 </head>
 <body>
@@ -55,7 +55,9 @@
       // Listen for the meeting request event
       document.querySelector('roi-calculator-form').addEventListener('meeting-requested', (e) => {
         console.log('Meeting request received:', e.detail);
-        // In a real application, you might send this data to a scheduling system
+        // The form data is now being sent to HubSpot when the "Request Meeting" button is clicked
+        // Note: You need to replace the placeholder portalId and formGuid in roi-calculator-form.js
+        // with your actual HubSpot values for the form submission to work
       });
     </script>
   </div>

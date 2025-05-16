@@ -41,25 +41,27 @@ export class RoiCalculatorForm extends LitElement {
     this.totalScore = 0;
     this.showScore = false;
     this.meetingRequested = false;
-    // Initialize CSRF token as empty, will be fetched from server
-    this.csrfToken = '';
-    // Fetch CSRF token from server
-    this._fetchCsrfToken();
+    // Initialize CSRF token - check localStorage first for persistence across page refreshes, otherwise generate a new one
+    const storedToken = localStorage.getItem('csrfToken');
+    if (storedToken) {
+      this.csrfToken = storedToken;
+    } else {
+      this._generateCsrfToken();
+    }
   }
 
-  // Fetch CSRF token from server
-  async _fetchCsrfToken() {
+  // Generate CSRF token client-side
+  _generateCsrfToken() {
     try {
-      const response = await fetch('/FormHandler.php', {
-        method: 'GET'
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      this.csrfToken = data.csrf_token;
+      // Generate a random token using a more secure method
+      const array = new Uint8Array(16);
+      window.crypto.getRandomValues(array);
+      this.csrfToken = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+
+      // Store the token in localStorage for persistence across page refreshes
+      localStorage.setItem('csrfToken', this.csrfToken);
     } catch (error) {
-      console.error('Error fetching CSRF token:', error);
+      console.error('Error generating CSRF token:', error);
     }
   }
 
@@ -689,41 +691,65 @@ export class RoiCalculatorForm extends LitElement {
     try {
       // Ensure we have a CSRF token before proceeding
       if (!this.csrfToken) {
-        console.log('CSRF token not available, fetching now...');
-        await this._fetchCsrfToken();
-
-        // If still no token after fetching, abort
-        if (!this.csrfToken) {
-          throw new Error('Could not obtain CSRF token');
-        }
+        console.log('CSRF token not available, generating now...');
+        this._generateCsrfToken();
       }
 
-      // Prepare the data to send
-      const formData = new FormData();
-      formData.append('platform', this.platform);
-      formData.append('operationalSatisfaction', this.operationalSatisfaction);
-      formData.append('backlogEfficiency', this.backlogEfficiency);
-      formData.append('challenges', JSON.stringify(this.challenges));
-      formData.append('roadmapClarity', this.roadmapClarity);
-      formData.append('name', this.name);
-      formData.append('email', this.email);
-      formData.append('jobTitle', this.jobTitle);
-      formData.append('companyName', this.companyName);
-      formData.append('totalScore', this.totalScore);
-      formData.append('csrfToken', this.csrfToken);
+      // ===================================================================
+      // IMPORTANT: HubSpot API Configuration
+      // You must replace these placeholder values with your actual HubSpot values
+      // ===================================================================
+      const portalId = '12345678'; // Replace with your actual HubSpot portal ID
+      const formGuid = 'abcdef12-3456-7890-abcd-ef1234567890'; // Replace with your actual form GUID
+      const endpoint = `https://api.hsforms.com/submissions/v3/integration/submit/${portalId}/${formGuid}`;
 
-      // Send the data to the server
-      const response = await fetch('/FormHandler.php', {
+      // Format data according to HubSpot's requirements
+      // See: https://developers.hubspot.com/docs/reference/api/marketing/forms/v3-legacy#submit-data-to-a-form-unauthenticated
+      const hubspotData = {
+        fields: [
+          { name: 'platform', value: this.platform },
+          { name: 'operational_satisfaction', value: this.operationalSatisfaction },
+          { name: 'backlog_efficiency', value: this.backlogEfficiency },
+          { name: 'challenges', value: this.challenges.join(';') },
+          { name: 'roadmap_clarity', value: this.roadmapClarity },
+          { name: 'firstname', value: this.name.split(' ')[0] },
+          { name: 'lastname', value: this.name.split(' ').slice(1).join(' ') },
+          { name: 'email', value: this.email },
+          { name: 'jobtitle', value: this.jobTitle },
+          { name: 'company', value: this.companyName },
+          { name: 'total_score', value: this.totalScore.toString() }
+        ],
+        context: {
+          pageUri: window.location.href,
+          pageName: document.title
+        },
+        legalConsentOptions: {
+          consent: {
+            consentToProcess: true,
+            // Customize this text with your company name and privacy policy
+            text: "I agree to allow the company to store and process my personal data in accordance with the Privacy Policy."
+          }
+        }
+      };
+
+      console.log('Sending data to HubSpot:', hubspotData);
+
+      // Send data to HubSpot
+      const response = await fetch(endpoint, {
         method: 'POST',
-        body: formData
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(hubspotData)
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json();
+        // throw new Error(`HubSpot API error: ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`);
       }
 
-      // Log the response for debugging
-      console.log('Meeting request sent successfully');
+      const responseData = await response.json();
+      console.log('HubSpot response:', responseData);
 
       // Update the UI to show that the meeting has been requested
       this.meetingRequested = true;
@@ -736,14 +762,16 @@ export class RoiCalculatorForm extends LitElement {
           jobTitle: this.jobTitle,
           companyName: this.companyName,
           totalScore: this.totalScore,
-          csrfToken: this.csrfToken
+          csrfToken: this.csrfToken,
+          hubspotResponse: responseData
         },
         bubbles: true,
         composed: true
       }));
     } catch (error) {
-      console.error('Error sending meeting request:', error);
-      // You could add error handling here, such as displaying an error message to the user
+      console.error('Error sending meeting request to HubSpot:', error);
+      // Display error message to the user
+      alert(`Failed to request meeting: ${error.message}`);
     }
   }
 
