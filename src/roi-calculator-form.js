@@ -338,12 +338,12 @@ export class RoiCalculatorForm extends LitElement {
 
     .score-description {
       font-size: 16px;
-      color: #666;
       margin-bottom: 30px;
       line-height: 1.6;
       max-width: 80%;
       margin-left: auto;
       margin-right: auto;
+      font-weight: bold;
     }
 
     /* No additional styles needed for request-meeting-button as they're inherited from the base button styles */
@@ -375,6 +375,15 @@ export class RoiCalculatorForm extends LitElement {
       transform: translateX(-50%);
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
+      
+    p {
+        text-align: left;
+    } 
+      
+    p.form-subtitle {
+        text-align: center;
+        font-weight: bolder;
+    }
 
   `;
 
@@ -382,8 +391,10 @@ export class RoiCalculatorForm extends LitElement {
     return html`
       <div class="roi-calculator-form">
         <div class="form-header">
-          <h2 class="form-title">ROI Calculator</h2>
-          <p class="form-subtitle">Evaluate your eCommerce platform's performance and potential</p>
+          <h2 class="form-title">Scale Smarter Health Check</h2>
+          <p class="form-subtitle">Evaluate the performance of your commerce platform</p>
+          <p>Operational inefficiencies, ongoing challenges, and unclear roadmaps can quietly stall your growth and limit your ability to scale effectively. Without a clear understanding of your platform’s performance, it’s difficult to prioritise investments and address critical gaps.</p> 
+          <p>The Scale Smarter Health Check provides a clear, concise score that highlights your current standing, enabling you to make informed, strategic decisions and confidently plan your next steps toward sustainable growth.</p>
         </div>
 
         ${this.formSubmitted ? 
@@ -393,12 +404,8 @@ export class RoiCalculatorForm extends LitElement {
                 <div class="score-container">
                   <div class="score-title">Your current health score</div>
                   <div class="score-value ${this._getScoreColorClass()}">${this.totalScore}/10</div>
-                  <div class="score-description">
-                    ${this.totalScore >= 7 ? 
-                      'Your score indicates a low opportunity for ROI improvement!' : 
-                      this.totalScore >= 4 ? 
-                        'Your score indicates a moderate opportunity for ROI improvement.' : 
-                        'Your score indicates a significant opportunity for ROI improvement.'}
+                  <div class="score-description  ${this._getScoreColorClass()}">
+                  ${this._getScoreExplainTitle(this.totalScore)}
                   </div>
 
                   <div class="score-slider-container">
@@ -408,7 +415,7 @@ export class RoiCalculatorForm extends LitElement {
 
                   ${this.meetingRequested ? 
                     html`<div class="meeting-requested-message">Thank you! We'll contact you soon to schedule a meeting.</div>` : 
-                    html`<button class="request-meeting-button" @click=${this._handleRequestMeeting}>Request Meeting</button>`
+                    html`<button class="request-meeting-button" @click=${this._handleRequestMeeting}>BOOK A MEETING</button>`
                   }
                 </div>
               ` : ''
@@ -525,7 +532,7 @@ export class RoiCalculatorForm extends LitElement {
                 ${this.formErrors.companyName ? html`<div class="error-message">${this.formErrors.companyName}</div>` : ''}
               </div>
 
-              <button type="submit">Submit</button>
+              <button type="submit">VIEW YOUR HEALTH SCORE</button>
             </form>
           `
         }
@@ -699,8 +706,8 @@ export class RoiCalculatorForm extends LitElement {
       // IMPORTANT: HubSpot API Configuration
       // You must replace these placeholder values with your actual HubSpot values
       // ===================================================================
-      const portalId = '12345678'; // Replace with your actual HubSpot portal ID
-      const formGuid = 'abcdef12-3456-7890-abcd-ef1234567890'; // Replace with your actual form GUID
+      const portalId = '483867'; // Replace with your actual HubSpot portal ID
+      const formGuid = '5e1eff2f-86b6-43cb-a2ec-b68256423b7a'; // Replace with your actual form GUID
       const endpoint = `https://api.hsforms.com/submissions/v3/integration/submit/${portalId}/${formGuid}`;
 
       // Format data according to HubSpot's requirements
@@ -790,6 +797,18 @@ export class RoiCalculatorForm extends LitElement {
       return 'score-value-amber';
     } else {
       return 'score-value-red';
+    }
+  }
+
+  _getScoreExplainTitle() {
+    if (this.totalScore >= 8) {
+      return 'Well-optimised and ready to lead with continuous innovation';
+    } else if (this.totalScore >= 6) {
+      return 'Solid foundation with room to optimise and scale more effectively';
+    } else if (this.totalScore >= 4) {
+      return 'Noticeable inefficiencies and gaps require proactive improvement';
+    } else {
+      return 'Critical risks are holding back your growth and need urgent attention';
     }
   }
 
