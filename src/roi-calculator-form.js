@@ -3,7 +3,6 @@ import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 
 export class RoiCalculatorForm extends LitElement {
   static properties = {
-    // Form data
     platform: {type: String},
     operationalSatisfaction: {type: String},
     backlogEfficiency: {type: String},
@@ -13,20 +12,18 @@ export class RoiCalculatorForm extends LitElement {
     email: {type: String},
     jobTitle: {type: String},
     companyName: {type: String},
-    // Form state
     formSubmitted: {type: Boolean},
     formErrors: {type: Object},
-    // Scoring
     totalScore: {type: Number},
     showScore: {type: Boolean},
     meetingRequested: {type: Boolean},
-    // CSRF token
-    csrfToken: {type: String}
+    csrfToken: {type: String},
+    portalId: {type: String, attribute: 'portal-id'},
+    formGuid: {type: String, attribute: 'form-guid'}
   };
 
   constructor () {
     super();
-    // Initialize properties
     this.platform = '';
     this.operationalSatisfaction = '';
     this.backlogEfficiency = '';
@@ -38,11 +35,11 @@ export class RoiCalculatorForm extends LitElement {
     this.companyName = '';
     this.formSubmitted = false;
     this.formErrors = {};
-    // Initialize scoring properties
     this.totalScore = 0;
     this.showScore = false;
     this.meetingRequested = false;
-    // Initialize CSRF token - check localStorage first for persistence across page refreshes, otherwise generate a new one
+    this.portalId = '';
+    this.formGuid = '';
     const storedToken = localStorage.getItem('csrfToken');
     if (storedToken) {
       this.csrfToken = storedToken;
@@ -51,23 +48,18 @@ export class RoiCalculatorForm extends LitElement {
     }
   }
 
-  // Generate CSRF token client-side
   _generateCsrfToken () {
     try {
-      // Generate a random token using a more secure method
       const array = new Uint8Array(16);
       window.crypto.getRandomValues(array);
       this.csrfToken = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
 
-      // Store the token in localStorage for persistence across page refreshes
       localStorage.setItem('csrfToken', this.csrfToken);
     } catch (error) {
       console.error('Error generating CSRF token:', error);
     }
   }
 
-  // Scoring methods
-  // For platform, we just store the text value, no scoring needed
   _getPlatformValue () {
     return this.platform;
   }
@@ -95,7 +87,6 @@ export class RoiCalculatorForm extends LitElement {
   }
 
   _getChallengesScore () {
-    // For challenges, the score is max 3 points, with 1 point deducted per challenge selected
     return Math.max(0, 3 - this.challenges.length);
   }
 
@@ -710,22 +701,13 @@ export class RoiCalculatorForm extends LitElement {
 
   async _handleRequestMeeting () {
     try {
-      // Ensure we have a CSRF token before proceeding
       if (!this.csrfToken) {
         console.log('CSRF token not available, generating now...');
         this._generateCsrfToken();
       }
 
-      // ===================================================================
-      // IMPORTANT: HubSpot API Configuration
-      // You must replace these placeholder values with your actual HubSpot values
-      // ===================================================================
-      const portalId = '483867'; // Replace with your actual HubSpot portal ID
-      const formGuid = '5e1eff2f-86b6-43cb-a2ec-b68256423b7a'; // Replace with your actual form GUID
-      const endpoint = `https://api.hsforms.com/submissions/v3/integration/submit/${portalId}/${formGuid}`;
+      const endpoint = `https://api.hsforms.com/submissions/v3/integration/submit/${this.portalId}/${this.formGuid}`;
 
-      // Format data according to HubSpot's requirements
-      // See: https://developers.hubspot.com/docs/reference/api/marketing/forms/v3-legacy#submit-data-to-a-form-unauthenticated
       const hubspotData = {
         fields: [
           {name: 'platform', value: this.platform},
@@ -747,7 +729,6 @@ export class RoiCalculatorForm extends LitElement {
         legalConsentOptions: {
           consent: {
             consentToProcess: true,
-            // Customize this text with your company name and privacy policy
             text: "I agree to allow the company to store and process my personal data in accordance with the Privacy Policy."
           }
         }
@@ -755,7 +736,6 @@ export class RoiCalculatorForm extends LitElement {
 
       console.log('Sending data to HubSpot:', hubspotData);
 
-      // Send data to HubSpot
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
@@ -766,16 +746,12 @@ export class RoiCalculatorForm extends LitElement {
 
       if (!response.ok) {
         const errorData = await response.json();
-        // throw new Error(`HubSpot API error: ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`);
       }
 
       const responseData = await response.json();
       console.log('HubSpot response:', responseData);
 
-      // Update the UI to show that the meeting has been requested
       this.meetingRequested = true;
-
-      // Dispatch a custom event that can be listened to by the parent
       this.dispatchEvent(new CustomEvent('meeting-requested', {
         detail: {
           name: this.name,
@@ -791,7 +767,6 @@ export class RoiCalculatorForm extends LitElement {
       }));
     } catch (error) {
       console.error('Error sending meeting request to HubSpot:', error);
-      // Display error message to the user
       alert(`Failed to request meeting: ${error.message}`);
     }
   }
@@ -801,7 +776,6 @@ export class RoiCalculatorForm extends LitElement {
     return re.test(email);
   }
 
-  // Get the appropriate color class based on the score
   _getScoreColorClass () {
     if (this.totalScore >= 8) {
       return 'score-value-green';
@@ -826,47 +800,35 @@ export class RoiCalculatorForm extends LitElement {
     }
   }
 
-  // Sanitize and convert company name to TitleCase
   _sanitizeAndFormatCompanyName () {
     if (!this.companyName) return '';
 
-    // Sanitize the company name to prevent XSS
     const sanitized = this.companyName
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
 
-    // Convert to TitleCase
     return sanitized.split(' ')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' ');
   }
 
-  // Get the appropriate summary text based on score color
   _getScoreSummaryText () {
     const companyName = this._sanitizeAndFormatCompanyName();
 
     if (this.totalScore >= 8) {
-      // Green
       return `Your commerce ecosystem at ${companyName} is well-optimised, demonstrating strong operational efficiency, effective backlog management and a clear, actionable roadmap. <br><br> This advanced level of maturity means you're well-positioned to scale confidently and adapt to future challenges with agility. <br><br> Persistent issues are minimal or well-managed, and your platform's capabilities are fully leveraged to support business objectives. <br><br> Maintaining this high standard will enable you to sustain growth, innovate effectively, and lead your market with confidence. <br><br> Meet with our experts to explore how we can help you stay ahead, identify new growth opportunities and continuously innovate, ensuring you remain ahead of the competition`;
     } else if (this.totalScore >= 6) {
-      // Yellow
       return `Your commerce platform and operational practices at ${companyName} are solid but not yet fully optimised. <br><br> There is clear evidence of good fundamentals, including functional backlog efficiency and operational support, yet some areas still require attention to maximise your growth potential.<br><br>  Challenges such as minor performance issues or roadmap ambiguity may persist, which could hinder your ability to scale efficiently. <br><br> By refining your project plans, closing skill gaps, and streamlining workflows, you can unlock stronger scalability and position your organisation for more sustainable growth. <br><br> Set up a meeting with our experts to discover strategies that optimise your operations and unlock your platform's full potential.`;
     } else if (this.totalScore >= 4) {
-      // Amber
       return `Your commerce operations at ${companyName} demonstrate some strengths, but also reveal noticeable inefficiencies and challenges that could slow progress and limit scalability if left unaddressed. <br><br>  These cautionary signals suggest there are gaps in your backlog management, operational workflows or platform capabilities that require focused improvement. <br><br>  While the situation is not critical, it's important to clarify your project roadmaps, address integration or skill gaps, and optimise your processes to prevent bottlenecks and operational strain. <br><br>  Taking proactive steps now will help you build resilience and improve overall performance.<br><br> Schedule a session with our specialists, to explore tailored solutions that close gaps and strengthen your operational foundation.`;
     } else {
-      // Red
       return `Your commerce platform and operational setup at ${companyName} currently face significant and urgent challenges that are likely holding back your growth and scalability.<br><br> Persistent inefficiencies, unclear or missing roadmaps and ongoing issues create critical risks that demand immediate attention. <br><br>  Without swift and focused action, these obstacles could lead to further delays, increased costs and missed business opportunities. <br><br>  It's essential to prioritise identifying root causes, stabilising your operations and developing a clear strategic plan to begin laying a solid foundation for future success.<br><br> Book a meeting with our experts today, to start addressing these critical risks and put your growth back on track.`;
     }
   }
 
-  // Calculate the percentage position for the score marker on the slider
   _getScorePercentage () {
-    // Convert score to percentage (0-10 to 0-100)
-    // Higher scores should be on the green side (right)
-    // Adjust the range to keep the marker away from the edges (5% to 95%)
     return 5 + (this.totalScore / 10) * 90;
   }
 }
