@@ -131,7 +131,8 @@ export class RoiCalculatorForm extends LitElement {
           margin: 0 auto;
           padding: 20px;
           box-sizing: border-box;
-          color: #333;
+          color: white;
+          background-color: #0F102E;
       }
 
       .form-header {
@@ -140,7 +141,7 @@ export class RoiCalculatorForm extends LitElement {
       }
 
       .form-title {
-          color: #333;
+          color: white;
           font-size: 28px;
           font-weight: 700;
           margin-bottom: 10px;
@@ -148,7 +149,7 @@ export class RoiCalculatorForm extends LitElement {
       }
 
       .form-subtitle {
-          color: #666;
+          color: #00FFFF;
           font-size: 16px;
           margin-top: 0;
           margin-bottom: 0;
@@ -163,7 +164,7 @@ export class RoiCalculatorForm extends LitElement {
           display: block;
           margin-bottom: 8px;
           font-weight: 600;
-          color: #333;
+          color: white;
           font-size: 14px;
       }
 
@@ -180,8 +181,8 @@ export class RoiCalculatorForm extends LitElement {
 
       select:focus, input[type="text"]:focus, input[type="email"]:focus {
           outline: none;
-          border-color: #e91e63;
-          box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.2);
+          border-color: #00FFFF;
+          box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.2);
       }
 
       .radio-group, .checkbox-group {
@@ -216,8 +217,8 @@ export class RoiCalculatorForm extends LitElement {
       }
 
       .radio-option input[type="radio"]:checked, .checkbox-option input[type="checkbox"]:checked {
-          border-color: #e91e63;
-          background-color: #fff;
+          border-color: #00FFFF;
+          background-color: #0F102E;
       }
 
       .radio-option input[type="radio"]:checked::after {
@@ -228,7 +229,7 @@ export class RoiCalculatorForm extends LitElement {
           width: 8px;
           height: 8px;
           border-radius: 50%;
-          background-color: #e91e63;
+          background-color: #00FFFF;
       }
 
       .checkbox-option input[type="checkbox"]:checked::after {
@@ -237,7 +238,7 @@ export class RoiCalculatorForm extends LitElement {
           top: -2px;
           left: 3px;
           font-size: 14px;
-          color: #e91e63;
+          color: #00FFFF;
       }
 
       .error-message {
@@ -269,27 +270,27 @@ export class RoiCalculatorForm extends LitElement {
       }
 
       .success-message {
-          color: #e91e63;
+          color: #00FFFF;
           font-weight: bold;
           margin-top: 20px;
           margin-bottom: 20px;
       }
 
       .score-container {
-          background-color: #ffffff;
-          border: 1px solid #e0e0e0;
+          background-color: #0F102E;
+          border: 1px solid #00FFFF;
           border-radius: 12px;
           padding: 30px;
           margin-top: 40px;
           margin-bottom: 40px;
           text-align: center;
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
       }
 
       .score-title {
           font-size: 22px;
           margin-bottom: 20px;
-          color: #333;
+          color: white;
           font-weight: 700;
       }
 
@@ -309,7 +310,7 @@ export class RoiCalculatorForm extends LitElement {
           transform: translateX(-50%);
           width: 40px;
           height: 3px;
-          background-color: #e91e63;
+          background-color: #00FFFF;
       }
 
       .score-value-red {
@@ -341,7 +342,7 @@ export class RoiCalculatorForm extends LitElement {
       /* No additional styles needed for request-meeting-button as they're inherited from the base button styles */
 
       .meeting-requested-message {
-          color: #e91e63;
+          color: #00FFFF;
           font-weight: bold;
           margin-top: 15px;
           font-size: 16px;
@@ -352,7 +353,7 @@ export class RoiCalculatorForm extends LitElement {
           line-height: 1.6;
           margin-bottom: 30px;
           text-align: left;
-          color: #333;
+          color: white;
           white-space: pre-line;
       }
 
@@ -371,7 +372,7 @@ export class RoiCalculatorForm extends LitElement {
           top: -8px;
           width: 8px;
           height: 28px;
-          background-color: #333;
+          background-color: aqua;
           border-radius: 4px;
           transform: translateX(-50%);
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -394,8 +395,10 @@ export class RoiCalculatorForm extends LitElement {
         <div class="form-header">
           <h2 class="form-title">Scale Smarter Health Check</h2>
           <p class="form-subtitle">Evaluate the performance of your commerce platform</p>
-          <p>Operational inefficiencies, ongoing challenges, and unclear roadmaps can quietly stall your growth and limit your ability to scale effectively. Without a clear understanding of your platform’s performance, it’s difficult to prioritise investments and address critical gaps.</p> 
-          <p>The Scale Smarter Health Check provides a clear, concise score that highlights your current standing, enabling you to make informed, strategic decisions and confidently plan your next steps toward sustainable growth.</p>
+          ${!this.formSubmitted ? html`
+            <p>Operational inefficiencies, ongoing challenges, and unclear roadmaps can quietly stall your growth and limit your ability to scale effectively. Without a clear understanding of your platform's performance, it's difficult to prioritise investments and address critical gaps.</p> 
+            <p>The Scale Smarter Health Check provides a clear, concise score that highlights your current standing, enabling you to make informed, strategic decisions and confidently plan your next steps toward sustainable growth.</p>
+          ` : ''}
         </div>
 
         ${this.formSubmitted ?
@@ -419,7 +422,7 @@ export class RoiCalculatorForm extends LitElement {
                   </div>
 
                   ${this.meetingRequested ?
-          html`<div class="meeting-requested-message">Thank you! We'll contact you soon to schedule a meeting.</div>` :
+          html`<div class="meeting-requested-message">Thank you, our team will be in touch shortly to schedule a meeting</div>` :
           html`<button class="request-meeting-button" @click=${this._handleRequestMeeting}>BOOK A MEETING</button>`
         }
                 </div>
@@ -803,15 +806,12 @@ export class RoiCalculatorForm extends LitElement {
   _sanitizeAndFormatCompanyName () {
     if (!this.companyName) return '';
 
-    const sanitized = this.companyName
+    // Only sanitize the company name, don't convert to Title Case
+    return this.companyName
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
-
-    return sanitized.split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ');
   }
 
   _getScoreSummaryText () {
