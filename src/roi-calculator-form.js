@@ -1,5 +1,5 @@
-import {LitElement, html, css} from 'lit';
-import {unsafeHTML} from 'lit/directives/unsafe-html.js';
+import {LitElement, html, css} from 'https://unpkg.com/lit@2/index.js?module';
+import {unsafeHTML} from 'https://unpkg.com/lit@2/directives/unsafe-html.js?module';
 
 export class RoiCalculatorForm extends LitElement {
   static properties = {

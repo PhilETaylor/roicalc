@@ -1,9 +1,3 @@
-# Build Commands
-
-npm run start
-
-npm run build
-
 # To use
 
 First, in Hubspot create a new form; you don't need to match the form fields unless you want to use them in automations.
