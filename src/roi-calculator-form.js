@@ -814,20 +814,20 @@ export class RoiCalculatorForm extends LitElement {
       .replace(/'/g, '&#39;');
   }
 
-  _formatChallenges() {
+  _formatChallenges () {
     // Format challenges with proper English grammar
     if (this.challenges.length === 0) {
       return '';
     } else if (this.challenges.length === 1) {
-      return this.challenges[0];
+      return this.challenges[0].toLowerCase();
     } else if (this.challenges.length === 2) {
-      return `${this.challenges[0]} and ${this.challenges[1]}`;
+      return `${this.challenges[0].toLowerCase()} and ${this.challenges[1].toLowerCase()}`;
     } else {
       const allButLast = this.challenges.slice(0, -1);
       const last = this.challenges[this.challenges.length - 1];
-      return `${allButLast.join(', ')} and ${last}`;
+      return `${allButLast.map(c => c.toLowerCase()).join(', ')} and ${last.toLowerCase()}`;
+      }
     }
-  }
 
   _getScoreSummaryText () {
     const companyName = this._sanitizeAndFormatCompanyName();
