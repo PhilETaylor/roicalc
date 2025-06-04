@@ -814,17 +814,33 @@ export class RoiCalculatorForm extends LitElement {
       .replace(/'/g, '&#39;');
   }
 
+  _formatChallenges() {
+    // Format challenges with proper English grammar
+    if (this.challenges.length === 0) {
+      return '';
+    } else if (this.challenges.length === 1) {
+      return this.challenges[0];
+    } else if (this.challenges.length === 2) {
+      return `${this.challenges[0]} and ${this.challenges[1]}`;
+    } else {
+      const allButLast = this.challenges.slice(0, -1);
+      const last = this.challenges[this.challenges.length - 1];
+      return `${allButLast.join(', ')} and ${last}`;
+    }
+  }
+
   _getScoreSummaryText () {
     const companyName = this._sanitizeAndFormatCompanyName();
+    const formattedChallenges = this._formatChallenges();
 
     if (this.totalScore >= 8) {
-      return `Your commerce ecosystem at ${companyName} is well-optimised, demonstrating strong operational efficiency, effective backlog management and a clear, actionable roadmap. <br><br> This advanced level of maturity means you're well-positioned to scale confidently and adapt to future challenges with agility. <br><br> Persistent issues are minimal or well-managed, and your platform's capabilities are fully leveraged to support business objectives. <br><br> Maintaining this high standard will enable you to sustain growth, innovate effectively, and lead your market with confidence. <br><br> Meet with our experts to explore how we can help you stay ahead, identify new growth opportunities and continuously innovate, ensuring you remain ahead of the competition`;
+      return `Your commerce ecosystem at ${companyName} is operating at a high level, with efficient processes, clear roadmaps and strong platform capabilities. You're ahead of the curve, but continued success depends on active refinement.<br><br>You noted areas such as ${formattedChallenges}, which suggest there are still efficiencies to unlock or opportunities to explore. Even the most mature platforms benefit from a fresh perspective and regular optimisation.<br><br>We work with high-performing businesses to fine-tune what's already working, so you can maintain your lead and stay agile in a fast-moving market.<br><br>Book a meeting with our experts to explore advanced optimisation and innovation opportunities, and keep your platform future-ready.`;
     } else if (this.totalScore >= 6) {
-      return `Your commerce platform and operational practices at ${companyName} are solid but not yet fully optimised. <br><br> There is clear evidence of good fundamentals, including functional backlog efficiency and operational support, yet some areas still require attention to maximise your growth potential.<br><br>  Challenges such as minor performance issues or roadmap ambiguity may persist, which could hinder your ability to scale efficiently. <br><br> By refining your project plans, closing skill gaps, and streamlining workflows, you can unlock stronger scalability and position your organisation for more sustainable growth. <br><br> Set up a meeting with our experts to discover strategies that optimise your operations and unlock your platform's full potential.`;
+      return `Your commerce platform and operations at ${companyName} are stable, but they're not fully working in your favour. The fundamentals are sound, but there are clear opportunities for improvement that could significantly increase your efficiency and ability to scale.<br><br>You mentioned ongoing issues such as ${formattedChallenges}, which are likely adding friction and slowing your momentum. These may seem minor now but could be holding back your full potential.<br><br>We can help you shift from 'good enough' to genuinely optimised, unlocking smarter operations and sustainable growth.<br><br>Book a meeting with our experts to uncover where you're losing value, and turn that into measurable gains.`;
     } else if (this.totalScore >= 4) {
-      return `Your commerce operations at ${companyName} demonstrate some strengths, but also reveal noticeable inefficiencies and challenges that could slow progress and limit scalability if left unaddressed. <br><br>  These cautionary signals suggest there are gaps in your backlog management, operational workflows or platform capabilities that require focused improvement. <br><br>  While the situation is not critical, it's important to clarify your project roadmaps, address integration or skill gaps, and optimise your processes to prevent bottlenecks and operational strain. <br><br>  Taking proactive steps now will help you build resilience and improve overall performance.<br><br> Schedule a session with our specialists, to explore tailored solutions that close gaps and strengthen your operational foundation.`;
+      return `Your commerce operations at ${companyName} show signs of strain, with areas of strength held back by persistent weak points. While not in crisis, your current state is quietly creating friction and preventing progress.<br><br>You identified challenges such as ${formattedChallenges}. These signal inefficiencies that if left unresolved will impact your ability to scale effectively.<br><br>Our team specialises in identifying hidden gaps and delays, fixing them before they become barriers. With focused support, we can help you strengthen weak areas and build the resilience your business needs to move forward confidently.<br><br>Book a meeting with our experts to address the cracks now, before they grow into roadblocks.`;
     } else {
-      return `Your commerce platform and operational setup at ${companyName} currently face significant and urgent challenges that are likely holding back your growth and scalability.<br><br> Persistent inefficiencies, unclear or missing roadmaps and ongoing issues create critical risks that demand immediate attention. <br><br>  Without swift and focused action, these obstacles could lead to further delays, increased costs and missed business opportunities. <br><br>  It's essential to prioritise identifying root causes, stabilising your operations and developing a clear strategic plan to begin laying a solid foundation for future success.<br><br> Book a meeting with our experts today, to start addressing these critical risks and put your growth back on track.`;
+      return `Your commerce platform and operations at ${companyName} are underperforming in key areas, and this is actively holding back your ability to grow and scale.<br><br>You highlighted serious concerns such as ${formattedChallenges}, which suggest that foundational issues are being overlooked or unresolved. These inefficiencies and capability gaps are creating instability, slowing performance, and leaving your business vulnerable to delays, rising costs, and missed opportunities.<br><br>The longer these issues remain unaddressed, the more damaging and expensive they will become. A lack of strategic clarity and operational focus today can result in compounding risks tomorrow.<br><br>Book a meeting with our experts today. This is your opportunity to regain control, stabilise your foundation, and reignite growth before further damage is done.`;
     }
   }
 
